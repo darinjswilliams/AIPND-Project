@@ -91,5 +91,6 @@ def get_input_args():
     return parser.parse_args()
 
 if __name__ == '__main__':
-    get_input_args()
+    input_args = get_input_args()
+    print(input_args)
 
