@@ -5,6 +5,9 @@ import numpy as np
 import argparse
 import json
 from typing import Dict
+
+from matplotlib import pyplot as plt
+
 from utilities import get_cat_to_names
 
 import torch

@@ -11,6 +11,7 @@ from torchvision import datasets, models, transforms
 
 
 from torch import nn, optim
+from utilities import get_input_args
 
 """
     Retrieves and parses the 3 command line arguments provided by the user when
@@ -261,9 +262,6 @@ def main():
     model = get_model_architecture(model_name)
     criterion = nn.NLLLoss()
     optimizer = optim.AdamW(model.classifier.parameters(), lr=learning_rate)
-
-
-
 
 
 if __name__ == '__main__':

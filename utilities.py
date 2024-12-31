@@ -86,7 +86,10 @@ def get_input_args():
 
     parser.add_argument('--top_k', dest='top_k', type=int, default=5, help='Return top K most likely classes')
 
-    parser.add_argument('--category_names',  type=str, default='cat_to_name.json', help='Mapping of categories to real names')
+    parser.add_argument('--category_names',  type=str, default='cat_to_name.json', help='Mapping of categories to real names in dictionary format')
 
     return parser.parse_args()
+
+if __name__ == '__main__':
+    get_input_args()
 
