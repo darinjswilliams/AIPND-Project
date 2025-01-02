@@ -1,16 +1,11 @@
-import argparse
-import json
-from typing import Dict
-
 import torch
 
-from torch import nn, optim
+from makeparse import make_parser
 from model_utils import (get_datasets,
                          get_model_architecture, get_dataloaders,
                          setup_hyper_params)
 from predict_utils import save_checkpoint
 from validation_utilis import get_device, commandline_validations
-from makeparse import make_parser
 
 
 def train_model(

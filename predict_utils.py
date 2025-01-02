@@ -3,9 +3,11 @@ from typing import Dict
 
 import numpy as np
 import torch
+from PIL import Image
 from torch import optim, nn
 
-from model_utils import DATA_ROOT, get_model_architecture
+from config import DATA_ROOT
+from model_utils import get_model_architecture
 from validation_utilis import get_device
 
 '''
@@ -22,14 +24,15 @@ def random_select_image():
 
     # Get all images under flowers
     all_images = list(image_path.glob('**/*.[jJ][pP][gG]'))
-
+    print(len(all_images))
     # Validate that images exists
     if not all_images:
         raise ValueError("Did not Find any Images")
 
     rand_image_path = np.random.choice(all_images)
+    image = Image.open(rand_image_path)
 
-    return str(rand_image_path)
+    return str(rand_image_path), image
 
 
 def load_checkpoint(args, filepath: str = 'checkpoint.pth'):
@@ -44,6 +47,7 @@ def load_checkpoint(args, filepath: str = 'checkpoint.pth'):
       the location where all tensors should be loaded.
     '''
     check_point = torch.load(f=filepath, map_location=device)
+
 
     # assign model
     model = get_model_architecture(args)
@@ -113,3 +117,9 @@ def save_checkpoint(image_datasets: Dict,
 
     # Use torch to save
     torch.save(checkpoint, path)
+
+
+if __name__ == '__main__':
+    image, image_path = random_select_image()
+    print(image_path)
+    print(image)

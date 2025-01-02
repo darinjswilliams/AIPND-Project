@@ -1,26 +1,14 @@
 import pathlib
-import time
-import torch.nn.functional as F
-import torchvision.transforms as transforms
+
 import numpy as np
-import argparse
-import json
-from typing import Dict
-
-from matplotlib import pyplot as plt
-
-from model_utils import get_cat_to_names
-from predict_utils import random_select_image, load_checkpoint, save_checkpoint
-from validation_utilis import get_device
-
 import torch
 from PIL import Image
-from torch import nn, optim
-from torch.utils.data import Dataset, DataLoader, RandomSampler
-from pathlib import Path
-from torchvision import datasets, models, transforms
-from model_utils import get_cat_to_names
+from matplotlib import pyplot as plt
+
 from makeparse import make_parser
+from model_utils import get_cat_to_names
+from predict_utils import random_select_image, load_checkpoint
+from validation_utilis import get_device
 
 
 def process_image(image_path):
@@ -37,7 +25,7 @@ def process_image(image_path):
     # Open image
     with Image.open(image_path) as img:
         # Resize to maintain aspect ratio with shortest side = 256
-        img.thumbnail((shortest_side, shortest_side), Image.ANTIALIAS)
+        img.thumbnail((shortest_side, shortest_side))
 
         # Center crop
         left = (img.width - crop_size) / 2
@@ -64,8 +52,11 @@ def predict(image_path=None, top_k=5, input_args=None):
 
     device = get_device(input_args.gpu)
 
-    image_path = random_select_image() if image_path is None else image_path
+    # image_path = random_select_image() if image_path is None else image_path
+    image_path, image  = random_select_image()
 
+    print(image_path)
+    print(image)
     if pathlib.Path(image_path).exists() is False:
         raise ValueError("Path does not exist for image file:")
 
@@ -77,9 +68,10 @@ def predict(image_path=None, top_k=5, input_args=None):
     model = load_checkpoint(input_args, input_args.checkpoint)
     model.eval()
     # move to device
+    print(model)
     image, model = image.to(device), model.to(device)
     cat_to_name = get_cat_to_names()
-
+    print("LENGTH OF CAT TO NAME: {}".format(len(cat_to_name)))
     with torch.no_grad():
         log_ps = model.forward(image)
         ps = torch.exp(log_ps)
@@ -94,8 +86,12 @@ def predict(image_path=None, top_k=5, input_args=None):
 
         # Assign labels to the top_class
         class_labels = [idx_to_class[cls] for cls in top_classes]
+        print("LENGTH OF CLASS LABELS: {}".format(len(class_labels)))
+        for label in class_labels:
+            print("HERE ARE THE CLASS LABELS: {}".format(label))
 
         flowers = [cat_to_name[label] for label in class_labels]
+        print("LENGTH OF FLOWERS: {}".format(len(flowers)))
 
     return top_ps, top_classes, flowers
 
@@ -164,9 +160,9 @@ def main():
                                          image_path=input_args.input)
         print_information(ps=ps, className=class_name, flower_name=flower)
 
-    if input_args.category_names:
-        cat_to_name = get_cat_to_names(input_args.category_names)
-        print_information(names=cat_to_name)
+    # if input_args.category_names:
+    #     cat_to_name = get_cat_to_names(input_args.category_names)
+    #     print_information(names=cat_to_name)
 
 
 

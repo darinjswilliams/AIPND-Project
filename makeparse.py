@@ -1,8 +1,7 @@
 import argparse
 import pathlib
 
-from model_utils import DATA_ROOT
-
+from config import DATA_ROOT
 
 """
     Retrieves and parses the 3 command line arguments provided by the user when

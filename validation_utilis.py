@@ -3,7 +3,7 @@ import pathlib
 
 import torch
 
-from model_utils import DATA_ROOT
+from config import DATA_ROOT
 
 '''
     Use Cuda if available, if not available use cpu

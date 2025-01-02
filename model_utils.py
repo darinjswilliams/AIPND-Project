@@ -1,23 +1,14 @@
 import json
 import os
-
-import pathlib
-
 from pathlib import Path
 
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 
+from config import DATA_ROOT
 from makeparse import make_parser
-from predict_utils import random_select_image
 from validation_utilis import get_device, model_validation
-
-# Paths to the root of the project and the `data` subfolder.
-PROJECT_ROOT = pathlib.Path(__name__).parent.resolve()
-DATA_ROOT = PROJECT_ROOT / 'flowers'
-
-
 
 '''
 Input: 
@@ -170,12 +161,12 @@ if __name__ == '__main__':
     input_args = make_parser()
     print(input_args)
     print(input_args.arch)
-    image_path = random_select_image()
-    print(image_path)
-    names = get_cat_to_names()
-    for k, v in names.items():
-        print('Flower Name: {}, Key:{}'.format(v, k))
-    # file_path = commandline_validations(input_args)
+    # image_path = random_select_image()
+    # print(image_path)
+    # names = get_cat_to_names()
+    # for k, v in names.items():
+    #     print('Flower Name: {}, Key:{}'.format(v, k))
+    file_path = commandline_validations(input_args)
     # # print(file_path)
     # # print(get_transformation(training=True))
     # # print(get_transformation(training=False))
