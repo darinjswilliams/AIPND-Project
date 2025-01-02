@@ -1,0 +1,115 @@
+import pathlib
+from typing import Dict
+
+import numpy as np
+import torch
+from torch import optim, nn
+
+from model_utils import DATA_ROOT, get_model_architecture
+from validation_utilis import get_device
+
+'''
+Get a random image from the flowers directory
+using the Glob Search Pattern to look for jpg images
+
+Returns:
+    image_path: Path to the image
+
+'''
+def random_select_image():
+
+    image_path = pathlib.Path(DATA_ROOT)
+
+    # Get all images under flowers
+    all_images = list(image_path.glob('**/*.[jJ][pP][gG]'))
+
+    # Validate that images exists
+    if not all_images:
+        raise ValueError("Did not Find any Images")
+
+    rand_image_path = np.random.choice(all_images)
+
+    return str(rand_image_path)
+
+
+def load_checkpoint(args, filepath: str = 'checkpoint.pth'):
+    # load configurtion from checkpooint.pth
+
+    device = get_device()
+
+    '''
+      Lets make sure we get the correct device we process model on
+      to avoid errors and days of debugging
+      map_location is a torch.device object or a string containing a device tag, it indicates 
+      the location where all tensors should be loaded.
+    '''
+    check_point = torch.load(f=filepath, map_location=device)
+
+    # assign model
+    model = get_model_architecture(args)
+    model.class_to_idx = check_point['class_to_idx']
+    model.classifier = check_point['classifier']
+    model.load_state_dict(check_point['state_dict'])
+
+    learning_rate = check_point['learning_rate']
+    optimizer = optim.AdamW(model.classifier.parameters(), lr=learning_rate)
+    optimizer = optimizer.load_state_dict(check_point['optimizer'])
+    input_size = check_point['input_size']
+    hidden_layer = check_point['hidden_units']
+    output_size = check_point['output_size']
+
+    # Hyper parameters
+    epochs = check_point['epochs']
+
+    return model
+
+
+'''
+    The following information that was previously saved  is coming from checkpoint
+
+      'input_size': input_features,
+      'hidden_units': hidden_layer,
+      'output_size': 102,
+      'class_to_idx': model.class_to_idx,
+      'state_dict': model.state_dict(),
+      'classifier': classifier,
+      'learning_rate': learning_rate,
+      'optimizer': optimizer.state_dict(),
+      'epochs': epochs 
+      
+      
+    Inserted a validation check where dataset information is coming from
+    if the dataset does not have train included in the dictionary than
+    it will raise a Value Error
+      
+ '''
+def save_checkpoint(image_datasets: Dict,
+                    model: nn.Module,
+                    classifier: nn.Module,
+                    optimizer: optim.Optimizer,
+                    epochs: int,
+                    input_features: int,
+                    hidden_layer: int,
+                    learning_rate: float,
+                    path: str = 'checkpoint.pth') -> None:
+    # Validate the dataset input
+    if ('train' not in image_datasets
+            or not hasattr(image_datasets['train'], 'class_to_idx')):
+        raise ValueError("image_datasets['train'] must exist and"
+                         " have a 'class_to_idx' attribute.")
+
+    model.class_to_idx = image_datasets['train'].class_to_idx
+
+    checkpoint = {'input_size': input_features,
+                  'hidden_units': hidden_layer,
+                  'output_size': 102,
+                  'class_to_idx': model.class_to_idx,
+                  'state_dict': model.state_dict(),
+                  'classifier': classifier,
+                  'learning_rate': learning_rate,
+                  'optimizer': optimizer.state_dict(),
+                  'epochs': epochs
+                  }
+
+    # Use torch to save
+    torch.save(checkpoint, path)

@@ -9,7 +9,9 @@ from typing import Dict
 
 from matplotlib import pyplot as plt
 
-from utilities import get_cat_to_names, get_device, random_select_image
+from model_utils import get_cat_to_names
+from predict_utils import random_select_image, load_checkpoint, save_checkpoint
+from validation_utilis import get_device
 
 import torch
 from PIL import Image
@@ -17,7 +19,8 @@ from torch import nn, optim
 from torch.utils.data import Dataset, DataLoader, RandomSampler
 from pathlib import Path
 from torchvision import datasets, models, transforms
-from utilities import make_parser, save_checkpoint, load_checkpoint, get_cat_to_names
+from model_utils import get_cat_to_names
+from makeparse import make_parser
 
 
 def process_image(image_path):
