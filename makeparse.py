@@ -31,7 +31,7 @@ def make_parser():
 
     parser.add_argument('--input', type=str,  help='Path to File')
 
-    parser.add_argument('--arch', dest='arch', type=str, default='vgg16', help='Model Architecture')
+    parser.add_argument('--arch', dest='arch', type=str, default='vgg16', help='Model Architecture supported vgg16, alexnet, densenet121, googlenet')
 
     parser.add_argument('--learning_rate', dest='learning_rate', type=float, default=0.001, help='Learning Rate')
 

@@ -147,14 +147,4 @@ def create_directory(dirname):
         os.makedirs(dirname)
         return True
 
-if __name__ == '__main__':
-    input_args = make_parser()
-    image, image_path = get_image_for_prediction(input_args)
-    print(image_path)
-    print(image)
-
-    image, image_path = random_select_image()
-    print(image_path)
-    print(image)
-
 

@@ -203,28 +203,7 @@ def main():
                     file_path=input_args)
 
 if __name__ == '__main__':
-    # main()
-    input_args = make_parser()
-    print(input_args)
-    print(input_args.arch)
-    file_path = commandline_validations(input_args)
-    train_datasets, valid_datasets, test_datasets, image_datasets = get_datasets(file_path)
-    # # print(get_datasets(file_path))
-    # train_loader, valid_loader, test_loader = get_process_path(file_path)
-    model = get_model_architecture(input_args)
-    model, criterion, optimizer = setup_hyper_params(model,
-                                                     input_args.arch,
-                                                     input_args.hidden_units,
-                                                     input_args.learning_rate)
-    save_checkpoint(image_datasets=image_datasets,
-                    model=model,
-                    classifier=model.classifier,
-                    optimizer=optimizer,
-                    epochs=input_args.epochs,
-                    input_features=model.classifier[0].in_features,
-                    hidden_layer=input_args.hidden_units,
-                    learning_rate=input_args.learning_rate,
-                    file_path=input_args)
+    main()
 
 
 
