@@ -200,7 +200,7 @@ def main():
                     input_features=model.classifier[0].in_features,
                     hidden_layer=input_args.hidden_units,
                     learning_rate=input_args.learning_rate,
-                    path=input_args.checkpoint)
+                    file_path=input_args)
 
 if __name__ == '__main__':
     # main()
