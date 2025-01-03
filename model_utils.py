@@ -102,9 +102,9 @@ def get_transformation(training=True):
     if We are training on GPU than lets set batch size to 64
     if training is on CPU than batch size is 32 
 '''
-def get_dataloaders(train_datasets, valid_datasets, test_datasets):
+def get_dataloaders(train_datasets, valid_datasets, test_datasets, input_args=None):
 
-    device = get_device()
+    device = get_device(input_args.gpu)
 
     if device == 'cpu':
         batch_size = 32

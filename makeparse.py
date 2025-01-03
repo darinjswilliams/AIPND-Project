@@ -41,7 +41,7 @@ def make_parser():
 
     parser.add_argument('--save_dir', dest='save_dir', type=str, default='CheckPoints', help='Directory to save the checkpoint')
 
-    parser.add_argument('--gpu', dest='gpu', type=bool, default=False, help='Use GPU if available')
+    parser.add_argument('--gpu', dest='gpu', type=str, default='cuda', help='Use GPU if available')
 
     parser.add_argument('--top_k', dest='top_k', type=int, default=5, help='Return top K most likely classes')
 

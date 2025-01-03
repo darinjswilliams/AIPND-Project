@@ -14,7 +14,7 @@ from config import DATA_ROOT
            For inference, it request to use gpu specifically if available.
            so the second if statement flow was create
 '''
-def get_device(use_cuda=None):
+def get_device(use_cuda):
     if use_cuda is None:
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -23,6 +23,7 @@ def get_device(use_cuda=None):
             return torch.device("cuda")
         else:
             return torch.device("cpu")
+
 
 
 def commandline_validations(in_args):

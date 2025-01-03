@@ -1,10 +1,11 @@
 import torch
+from torch import nn
 
 from makeparse import make_parser
 from model_utils import (get_datasets,
                          get_model_architecture, get_dataloaders,
                          setup_hyper_params)
-from predict_utils import save_checkpoint
+from predict_utils import save_checkpoint, load_checkpoint
 from validation_utilis import get_device, commandline_validations
 
 
@@ -109,16 +110,19 @@ def train_model(
                     model.train()
     print("Training Completed")
 
-def test_model(model, testloaders, criterion):
+def test_model(model, testloaders):
 
     model.eval()
+
+    # Loss
+    criterion = nn.NLLLoss()
 
     # Accumulate loss and Accuracy
     test_loss = 0
     accuracy = 0
 
     #move to device
-    device = get_device()
+    device = get_device(None)
     print("Testing Started")
     # No Gradient - Turn off AutoGrad
     with torch.no_grad():
@@ -155,43 +159,40 @@ def test_model(model, testloaders, criterion):
     model.train()
     print("Testing Completed")
 
+'''
+    If the model has been trained. Do not go thru setting up hyper parameters again. Look at the command line
+    for testing indicator 
+        --dir testing
+    
+    only pass in the test_loader
+'''
+def run_testing(test_loader, input_args=None):
+    model = load_checkpoint(args=input_args)
+
+    test_model(model=model, testloaders=test_loader)
 
 
-def main():
 
-    input_args = make_parser()
-    file_path = commandline_validations(input_args)
-    train_dataset, valid_dataset, test_dataset, image_dataset = get_datasets(file_path)
-    train_loader, valid_loader, test_loader \
-        = get_dataloaders(train_dataset, valid_dataset, test_dataset)
-    model = get_model_architecture(input_args)
+'''
+    Lets Save the Model Parameter for Later Use for Inference
+    Defaults to Checkpoint
+    When user uses predict the model will load
+'''
+def run_training(input_args, train_loader, valid_loader, image_dataset):
+    model = get_model_architecture(args=input_args)
+    model, criterion, optimizer = setup_hyper_params(model=model,
+                                                     model_name=input_args.arch,
+                                                     hidden_units=input_args.hidden_units,
+                                                     learning_rate=input_args.learning_rate)
 
-    # Convert pathlib path to string
-    training_type = input_args.dir
-    # Pass model, model name, hidden units, learning rate
+    train_model(trainloaders=train_loader,
+                validloaders=valid_loader,
+                model=model,
+                criterion=criterion,
+                optimizer=optimizer,
+                epochs=input_args.epochs
+                )
 
-    model, criterion, optimizer = setup_hyper_params( model,
-                                            input_args.arch,
-                                            input_args.hidden_units,
-                                            input_args.learning_rate)
-
-    if input_args.dir in ['train', 'valid']:
-        train_model(trainloaders=train_loader,
-                            validloaders=valid_loader,
-                            model=model,
-                            criterion=criterion,
-                            optimizer=optimizer,
-                            epochs=input_args.epochs
-                            )
-    elif training_type == 'test':
-        test_model(testloaders=train_loader,
-                       model=model,
-                       criterion=criterion,
-                       )
-
-    # Lets Save the Model Parameter for Later Use for Inference
-    # Defaults to Checkpoint
-    # When user uses predict the model will load
     save_checkpoint(image_datasets=image_dataset,
                     model=model,
                     classifier=model.classifier,
@@ -202,8 +203,58 @@ def main():
                     learning_rate=input_args.learning_rate,
                     file_path=input_args)
 
+
+def main():
+
+    input_args = make_parser()
+    file_path = commandline_validations(in_args=input_args)
+    train_dataset, valid_dataset, test_dataset, image_dataset = get_datasets(file_path=file_path)
+    train_loader, valid_loader, test_loader \
+        = get_dataloaders(train_datasets=train_dataset,
+                          valid_datasets=valid_dataset,
+                          test_datasets=test_dataset,
+                          input_args=input_args)
+
+
+    # Convert pathlib path to string
+    training_type = input_args.dir
+    # Pass model, model name, hidden units, learning rate
+
+    if training_type == 'test':
+        run_testing(test_loader=test_loader, input_args=input_args)
+
+
+    if input_args.dir in ['train', 'valid']:
+        run_training(input_args=input_args,
+                     train_loader=train_loader,
+                     valid_loader=valid_loader,
+                     image_dataset=image_dataset)
+
+
+
 if __name__ == '__main__':
     main()
+    # input_args = make_parser()
+    # print(input_args)
+    # print(input_args.arch)
+    # file_path = commandline_validations(input_args)
+    # train_datasets, valid_datasets, test_datasets, image_datasets = get_datasets(file_path)
+    # # # print(get_datasets(file_path))
+    # # train_loader, valid_loader, test_loader = get_process_path(file_path)
+    # model = get_model_architecture(input_args)
+    # model, criterion, optimizer = setup_hyper_params(model,
+    #                                                  input_args.arch,
+    #                                                  input_args.hidden_units,
+    #                                                  input_args.learning_rate)
+    # save_checkpoint(image_datasets=image_datasets,
+    #                 model=model,
+    #                 classifier=model.classifier,
+    #                 optimizer=optimizer,
+    #                 epochs=input_args.epochs,
+    #                 input_features=model.classifier[0].in_features,
+    #                 hidden_layer=input_args.hidden_units,
+    #                 learning_rate=input_args.learning_rate,
+    #                 file_path=input_args)
 
 
 
