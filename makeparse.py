@@ -39,13 +39,13 @@ def make_parser():
 
     parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='Number of Epochs')
 
-    parser.add_argument('--save_dir', dest='save_dir', type=str, default='checkpoint.pth', help='Directory to save the checkpoint')
+    parser.add_argument('--save_dir', dest='save_dir', type=str, default='CheckPoints', help='Directory to save the checkpoint')
 
     parser.add_argument('--gpu', dest='gpu', type=bool, default=False, help='Use GPU if available')
 
     parser.add_argument('--top_k', dest='top_k', type=int, default=5, help='Return top K most likely classes')
 
-    parser.add_argument('--category_names',  type=str, default='cat_to_name.json', help='Mapping of categories to real names in dictionary format')
+    parser.add_argument('--category_names',  type=str,  help='Mapping of categories to real names in dictionary format')
 
     parser.add_argument('--checkpoint', dest='checkpoint', type=str, default='checkpoint.pth', help='Path to checkpoint file')
 

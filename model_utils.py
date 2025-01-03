@@ -152,6 +152,10 @@ def setup_hyper_params(model, model_name: str, hidden_units: int, learning_rate:
 
 
 def get_cat_to_names(input_args='cat_to_name.json'):
+
+    if not os.path.isfile(input_args):
+        raise FileNotFoundError(f"File path {input_args} does not exist.")
+
     with open(input_args) as datafile:
         cat_to_name = json.load(datafile)
     return cat_to_name
@@ -166,30 +170,32 @@ if __name__ == '__main__':
     # names = get_cat_to_names()
     # for k, v in names.items():
     #     print('Flower Name: {}, Key:{}'.format(v, k))
-    file_path = commandline_validations(input_args)
+
+    # file_path = commandline_validations(input_args)
+
     # # print(file_path)
     # # print(get_transformation(training=True))
     # # print(get_transformation(training=False))
     # train_datasets, valid_datasets, test_datasets, image_datasets = get_datasets(file_path)
     # # print(get_datasets(file_path))
-    # # train_loader, valid_loader, test_loader = get_process_path(file_path)
-    # # print('traindir: {}'.format(train_loader))
+    # train_loader, valid_loader, test_loader = get_process_path(file_path)
+    # print('traindir: {}'.format(train_loader))
     # # print('testdir: {}'.format(test_loader))
     # # print('validdir: {}'.format(valid_loader))
     # # train_loader, valid_loader, test_loader = get_dataloaders(train_datasets,
     # #                                                           valid_datasets,
     # #                                                           test_datasets)
+    # model = get_model_architecture(input_args)
     # # print('trainloader: {}'.format(train_loader))
     # # print('validloader: {}'.format(valid_loader,))
     # # print('testloader: {}'.format(test_loader))
     # # print('image dataset: {}'.format(image_datasets))
-    # model = get_model_architecture(input_args)
     # print(model)
     # model, criterion, optimizer = setup_hyper_params(model,
     #                                                  input_args.arch,
     #                                                  input_args.hidden_units,
     #                                                  input_args.learning_rate)
-    #
+    # #
     # save_checkpoint(image_datasets=image_datasets,
     #                 model=model,
     #                 classifier=model.classifier,
@@ -200,8 +206,6 @@ if __name__ == '__main__':
     #                 learning_rate=input_args.learning_rate,
     #                 path=input_args.checkpoint)
     #
-    # model = load_checkpoint(args=input_args,
-    #                filepath=input_args.checkpoint)
     # print(model)
     # print(setup_hyper_params(model,
     #                          input_args.arch,

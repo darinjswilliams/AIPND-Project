@@ -1,3 +1,4 @@
+import os
 import pathlib
 from typing import Dict
 
@@ -35,10 +36,10 @@ def random_select_image():
     return str(rand_image_path), image
 
 
-def load_checkpoint(args, filepath: str = 'checkpoint.pth'):
+def load_checkpoint(args):
     # load configurtion from checkpooint.pth
 
-    device = get_device()
+    device = get_device(args.gpu)
 
     '''
       Lets make sure we get the correct device we process model on
@@ -46,7 +47,12 @@ def load_checkpoint(args, filepath: str = 'checkpoint.pth'):
       map_location is a torch.device object or a string containing a device tag, it indicates 
       the location where all tensors should be loaded.
     '''
-    check_point = torch.load(f=filepath, map_location=device)
+    file_path = os.path.join(args.save_dir, args.checkpoint)
+    if pathlib.Path(str(file_path)).exists() is False:
+        print("The CheckPoint path does not exist:")
+        exit(1)
+
+    check_point = torch.load(f=str(file_path), map_location=device)
 
 
     # assign model
@@ -95,7 +101,7 @@ def save_checkpoint(image_datasets: Dict,
                     input_features: int,
                     hidden_layer: int,
                     learning_rate: float,
-                    path: str = 'checkpoint.pth') -> None:
+                    file_path) -> None:
     # Validate the dataset input
     if ('train' not in image_datasets
             or not hasattr(image_datasets['train'], 'class_to_idx')):
@@ -115,11 +121,22 @@ def save_checkpoint(image_datasets: Dict,
                   'epochs': epochs
                   }
 
-    # Use torch to save
-    torch.save(checkpoint, path)
+    # Let check to see if the path exist
+    if file_path.save_dir is not None and file_path.checkpoint is not None :
+       create_directory(file_path.save_dir)
+       file_path = os.path.join(file_path.save_dir, file_path.checkpoint)
+       torch.save(checkpoint, str(file_path))
+    else:
+        torch.save(checkpoint, str(file_path.checkpoint))
 
+def create_directory(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+        return True
 
 if __name__ == '__main__':
     image, image_path = random_select_image()
     print(image_path)
     print(image)
+
+

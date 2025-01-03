@@ -55,8 +55,6 @@ def predict(image_path=None, top_k=5, input_args=None):
     # image_path = random_select_image() if image_path is None else image_path
     image_path, image  = random_select_image()
 
-    print(image_path)
-    print(image)
     if pathlib.Path(image_path).exists() is False:
         raise ValueError("Path does not exist for image file:")
 
@@ -65,13 +63,14 @@ def predict(image_path=None, top_k=5, input_args=None):
     image = image.unsqueeze_(0)
 
     # Get Model f
-    model = load_checkpoint(input_args, input_args.checkpoint)
+    model = load_checkpoint(input_args)
+
     model.eval()
     # move to device
-    print(model)
+
     image, model = image.to(device), model.to(device)
     cat_to_name = get_cat_to_names()
-    print("LENGTH OF CAT TO NAME: {}".format(len(cat_to_name)))
+
     with torch.no_grad():
         log_ps = model.forward(image)
         ps = torch.exp(log_ps)
@@ -86,12 +85,8 @@ def predict(image_path=None, top_k=5, input_args=None):
 
         # Assign labels to the top_class
         class_labels = [idx_to_class[cls] for cls in top_classes]
-        print("LENGTH OF CLASS LABELS: {}".format(len(class_labels)))
-        for label in class_labels:
-            print("HERE ARE THE CLASS LABELS: {}".format(label))
 
         flowers = [cat_to_name[label] for label in class_labels]
-        print("LENGTH OF FLOWERS: {}".format(len(flowers)))
 
     return top_ps, top_classes, flowers
 
@@ -120,6 +115,7 @@ def imshow(image, ax=None, title=None):
 def print_information(ps=None, className=None, flower_name=None, names=None):
 
     if ps is not None:
+        print()
         print("The Name of Flower is : ", flower_name)
         print("The Probability of the Flower is : ", ps)
         print("The Class of the Flower is : ", className)
@@ -158,11 +154,14 @@ def main():
         ps, class_name, flower = predict(input_args=input_args,
                                          top_k=input_args.top_k,
                                          image_path=input_args.input)
-        print_information(ps=ps, className=class_name, flower_name=flower)
+        print_information(ps=ps,
+                          className=class_name,
+                          flower_name=flower)
 
-    # if input_args.category_names:
-    #     cat_to_name = get_cat_to_names(input_args.category_names)
-    #     print_information(names=cat_to_name)
+    if input_args.category_names:
+        cat_to_name = get_cat_to_names(input_args.category_names)
+        for k, v in cat_to_name.items():
+            print('Flower Name: {}, Key:{}'.format(v, k))
 
 
 
