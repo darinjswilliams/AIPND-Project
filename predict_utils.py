@@ -8,6 +8,7 @@ from PIL import Image
 from torch import optim, nn
 
 from config import DATA_ROOT
+from makeparse import make_parser
 from model_utils import get_model_architecture
 from validation_utilis import get_device
 
@@ -35,9 +36,21 @@ def random_select_image():
 
     return str(rand_image_path), image
 
+def get_image_for_prediction(input_args):
+
+    image_path = input_args.input
+
+    dir_path = os.path.dirname(image_path)
+
+    if not os.path.isdir(dir_path):
+        print("No Path Exists for Image File:")
+        exit(1)
+
+    image = Image.open(image_path)
+
+    return  image_path, image
 
 def load_checkpoint(args):
-    # load configurtion from checkpooint.pth
 
     device = get_device(args.gpu)
 
@@ -135,6 +148,11 @@ def create_directory(dirname):
         return True
 
 if __name__ == '__main__':
+    input_args = make_parser()
+    image, image_path = get_image_for_prediction(input_args)
+    print(image_path)
+    print(image)
+
     image, image_path = random_select_image()
     print(image_path)
     print(image)

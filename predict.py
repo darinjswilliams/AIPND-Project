@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 from makeparse import make_parser
 from model_utils import get_cat_to_names
-from predict_utils import random_select_image, load_checkpoint
+from predict_utils import random_select_image, load_checkpoint, get_image_for_prediction
 from validation_utilis import get_device
 
 
@@ -53,7 +53,10 @@ def predict(image_path=None, top_k=5, input_args=None):
     device = get_device(input_args.gpu)
 
     # image_path = random_select_image() if image_path is None else image_path
-    image_path, image  = random_select_image()
+    if input_args.input is None:
+        image_path, image  = random_select_image()
+    else:
+        image_path, image = get_image_for_prediction(input_args=input_args)
 
     if pathlib.Path(image_path).exists() is False:
         raise ValueError("Path does not exist for image file:")

@@ -29,7 +29,7 @@ def make_parser():
 
     parser.add_argument('--dir',  type=str, default=DATA_ROOT, help='Directory where images are stored')
 
-    parser.add_argument('--input', type=pathlib.Path, default=DATA_ROOT, help='Path to File')
+    parser.add_argument('--input', type=str,  help='Path to File')
 
     parser.add_argument('--arch', dest='arch', type=str, default='vgg16', help='Model Architecture')
 
