@@ -15,11 +15,12 @@ def train_model(
                 model,
                 criterion,
                 optimizer,
-                epochs
+                epochs,
+                gpu
                ):
 
     # move the model to the device
-    device = get_device()
+    device = get_device(gpu)
     model.to(device)
 
     # set up paramter that are used to train our model
@@ -190,7 +191,8 @@ def run_training(input_args, train_loader, valid_loader, image_dataset):
                 model=model,
                 criterion=criterion,
                 optimizer=optimizer,
-                epochs=input_args.epochs
+                epochs=input_args.epochs,
+                gpu=input_args.gpu
                 )
 
     save_checkpoint(image_datasets=image_dataset,
